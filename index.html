@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CredINSS | Simulador de Crédito Profissional</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; scroll-behavior: smooth; }
+        .glass { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(15px); }
+        .step-content { display: none; }
+        .step-content.active { display: block; animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .btn-primary { background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -5px rgba(30, 64, 175, 0.4); }
+        .card-choice { border: 2px solid #f1f5f9; transition: all 0.2s ease; }
+        .card-choice:hover { border-color: #3b82f6; background-color: #eff6ff; }
+        .card-choice.selected { border-color: #2563eb; background-color: #eff6ff; box-shadow: 0 0 0 1px #2563eb; }
+        input[type="range"] { accent-color: #2563eb; }
+        .term-badge { cursor: pointer; border: 2px solid #e2e8f0; transition: all 0.2s; }
+        .term-badge.active { background: #2563eb; color: white; border-color: #2563eb; }
+        
+        /* Custom scrollbar for selects */
+        select::-webkit-scrollbar { width: 6px; }
+        select::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 overflow-x-hidden">
+
+    <!-- Promo Bar -->
+    <div class="bg-blue-600 text-white text-[10px] md:text-xs py-2 px-4 text-center font-bold uppercase tracking-widest">
+        ⚠️ Taxas reduzidas do INSS válidas até <span id="current-date">--/--</span>. Aproveite agora!
+    </div>
+
+    <!-- Nav -->
+    <nav class="sticky top-0 z-50 glass border-b border-slate-200 py-4 px-6">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                </div>
+                <span class="text-2xl font-black text-blue-900 tracking-tighter uppercase">Cred<span class="text-blue-500">INSS</span></span>
+            </div>
+            <div class="hidden md:flex items-center gap-6">
+                <div class="text-right">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Atendimento Digital</p>
+                    <p class="text-sm font-bold text-green-600 flex items-center gap-1"><span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> Sistema Online</p>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-6 py-12 md:py-20">
+        
+        <div class="grid lg:grid-cols-12 gap-16 items-start">
+            
+            <!-- Esquerda: Gatilhos de Confiança -->
+            <div class="lg:col-span-5 space-y-10">
+                <div class="space-y-6">
+                    <h1 class="text-4xl md:text-6xl font-[800] text-slate-900 leading-[1.1] tracking-tight">
+                        Seu crédito INSS com <span class="text-blue-600">transparência total.</span>
+                    </h1>
+                    <p class="text-lg text-slate-600 leading-relaxed">
+                        Simule agora e veja o valor real da sua parcela. Sem letras miúdas, sem taxas antecipadas e com liberação em até 24h.
+                    </p>
+                </div>
+
+                <!-- Prova Social -->
+                <div class="bg-white p-6 rounded-[32px] shadow-sm border border-slate-200">
+                    <div class="flex gap-1 text-yellow-400 mb-4">
+                        <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    </div>
+                    <p class="text-slate-700 italic mb-4">"O simulador me mostrou exatamente quanto eu ia pagar. O dinheiro caiu na conta no dia seguinte, sem enrolação."</p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-slate-200 rounded-full"></div>
+                        <div>
+                            <p class="text-sm font-bold text-slate-900">Maria Socorro G.</p>
+                            <p class="text-xs text-slate-500">Aposentada - São Paulo/SP</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Selos -->
+                <div class="flex flex-wrap gap-6 items-center opacity-60">
+                    <img src="https://logodownload.org/wp-content/uploads/2014/10/google-safe-browsing-logo.png" class="h-8 grayscale" alt="Google Safe">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/e/e4/Inss_logo.png" class="h-6 grayscale" alt="INSS">
+                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter border-l border-slate-300 pl-4">
+                        Auditado via LGPD<br>Criptografia SSL 256 bits
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulário Pro -->
+            <div class="lg:col-span-7" id="form-anchor">
+                <div class="bg-white rounded-[40px] shadow-2xl shadow-blue-900/10 border border-slate-100 overflow-hidden relative">
+                    
+                    <!-- Progress Header -->
+                    <div class="bg-slate-50 border-b border-slate-100 p-8 flex justify-between items-center">
+                        <div class="space-y-1">
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest" id="step-label">Passo 1 de 6</p>
+                            <div class="flex gap-1" id="progress-dots"></div>
+                        </div>
+                        <div id="countdown" class="bg-red-50 text-red-600 px-3 py-1 rounded-full text-[10px] font-bold animate-pulse">
+                            OFERTA EXPIRA EM 09:59
+                        </div>
+                    </div>
+
+                    <form id="pro-form" class="p-8 md:p-12 min-h-[500px] flex flex-col justify-between" onsubmit="event.preventDefault()">
+                        
+                        <!-- ETAPA 1: Perfil -->
+                        <div id="step-1" class="step-content active">
+                            <h2 class="text-3xl font-[800] text-slate-900 mb-8">Olá! 👋 Qual o seu tipo de benefício?</h2>
+                            <div class="grid gap-4">
+                                <label onclick="autoNext('perfil', 'Aposentado')" class="card-choice p-6 rounded-3xl cursor-pointer flex items-center gap-6 group">
+                                    <div class="w-14 h-14 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">👴</div>
+                                    <span class="text-xl font-bold text-slate-800">Aposentado(a)</span>
+                                </label>
+                                <label onclick="autoNext('perfil', 'Pensionista')" class="card-choice p-6 rounded-3xl cursor-pointer flex items-center gap-6 group">
+                                    <div class="w-14 h-14 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">👵</div>
+                                    <span class="text-xl font-bold text-slate-800">Pensionista</span>
+                                </label>
+                                <label onclick="autoNext('perfil', 'BPC/LOAS')" class="card-choice p-6 rounded-3xl cursor-pointer flex items-center gap-6 group">
+                                    <div class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">♿</div>
+                                    <span class="text-xl font-bold text-slate-800">BPC / LOAS</span>
+                                </label>
+                            </div>
+                            <input type="hidden" name="perfil" id="input-perfil">
+                        </div>
+
+                        <!-- ETAPA 2: Serviço -->
+                        <div id="step-2" class="step-content">
+                            <h2 class="text-3xl font-[800] text-slate-900 mb-8">O que você precisa hoje?</h2>
+                            <div class="grid gap-4">
+                                <label onclick="autoNext('servico', 'Novo/Renovação')" class="card-choice p-6 rounded-3xl cursor-pointer flex items-center justify-between group">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-12 h-12 bg-blue-600 text-white rounded-xl flex items-center justify-center font-bold">R$</div>
+                                        <span class="text-lg font-bold">Solicitar Valor Novo / Renovação</span>
+                                    </div>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                                </label>
+                                <label onclick="autoNext('servico', 'Portabilidade')" class="card-choice p-6 rounded-3xl cursor-pointer flex items-center justify-between group">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-12 h-12 bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center">🔃</div>
+                                        <span class="text-lg font-bold">Mudar de Banco (Portabilidade)</span>
+                                    </div>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                                </label>
+                            </div>
+                            <input type="hidden" name="servico" id="input-servico">
+                        </div>
+
+                        <!-- ETAPA 3: SIMULADOR -->
+                        <div id="step-3" class="step-content">
+                            <h2 class="text-2xl font-[800] text-slate-900 mb-8">Simule sua parcela real:</h2>
+                            <div class="space-y-10">
+                                <div>
+                                    <div class="flex justify-between items-end mb-4">
+                                        <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Quanto você precisa?</span>
+                                        <span class="text-3xl font-black text-blue-600" id="sim-val-display">R$ 5.000</span>
+                                    </div>
+                                    <input type="range" id="sim-input-val" min="2000" max="10000" step="500" value="5000" oninput="recalc()" class="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer">
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Prazo do pagamento:</p>
+                                    <div class="grid grid-cols-5 gap-2">
+                                        <div onclick="setTerm(36)" class="term-badge py-3 rounded-xl text-center font-bold text-sm" id="term-36">36x</div>
+                                        <div onclick="setTerm(48)" class="term-badge py-3 rounded-xl text-center font-bold text-sm" id="term-48">48x</div>
+                                        <div onclick="setTerm(60)" class="term-badge py-3 rounded-xl text-center font-bold text-sm" id="term-60">60x</div>
+                                        <div onclick="setTerm(72)" class="term-badge py-3 rounded-xl text-center font-bold text-sm" id="term-72">72x</div>
+                                        <div onclick="setTerm(84)" class="term-badge active py-3 rounded-xl text-center font-bold text-sm" id="term-84">84x</div>
+                                    </div>
+                                </div>
+                                <div class="bg-slate-900 rounded-[32px] p-8 text-white">
+                                    <div class="grid md:grid-cols-2 gap-8 divide-y md:divide-y-0 md:divide-x divide-slate-800">
+                                        <div class="text-center md:text-left">
+                                            <p class="text-[10px] font-bold text-slate-500 uppercase mb-1">Parcela Mensal Estimada</p>
+                                            <p class="text-4xl font-black" id="res-parcela">R$ 138,50</p>
+                                            <p class="text-[10px] text-green-400 font-bold mt-2">Juros de 1.66% a.m.</p>
+                                        </div>
+                                        <div class="text-center md:text-left pt-6 md:pt-0 md:pl-8">
+                                            <p class="text-[10px] font-bold text-slate-500 uppercase mb-1">Custo Total (CET)</p>
+                                            <p class="text-lg font-bold" id="res-total">Total: R$ 11.634,00</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" onclick="changeStep(1)" class="w-full py-6 bg-blue-600 text-white font-black rounded-3xl text-xl hover:bg-blue-700 transition-all shadow-xl shadow-blue-200 uppercase tracking-tighter">
+                                    Sim, Quero este Crédito
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- ETAPA 4: Identificação -->
+                        <div id="step-4" class="step-content">
+                            <h2 class="text-2xl font-[800] text-slate-900 mb-8">Dados de Identificação:</h2>
+                            <div class="space-y-6">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Nome Completo</label>
+                                    <input type="text" id="form-nome" placeholder="Seu nome completo" class="w-full bg-slate-50 border border-slate-200 p-5 rounded-2xl focus:border-blue-600 outline-none transition-all font-bold">
+                                </div>
+                                <div class="grid md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-400 uppercase mb-2">CPF</label>
+                                        <input type="text" id="form-cpf" placeholder="000.000.000-00" class="w-full bg-slate-50 border border-slate-200 p-5 rounded-2xl focus:border-blue-600 outline-none transition-all font-bold">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-400 uppercase mb-2">WhatsApp</label>
+                                        <input type="text" id="form-whatsapp" placeholder="(00) 00000-0000" class="w-full bg-slate-50 border border-slate-200 p-5 rounded-2xl focus:border-blue-600 outline-none transition-all font-bold">
+                                    </div>
+                                </div>
+                                <label class="flex items-start gap-3 p-4 bg-slate-50 rounded-2xl cursor-pointer">
+                                    <input type="checkbox" id="lgpd-check" class="mt-1 w-5 h-5 accent-blue-600" checked>
+                                    <span class="text-[11px] text-slate-500 leading-tight">Concordo com a <b>Política de Privacidade</b> e autorizo a consulta de margem.</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- ETAPA 5: Banco e Pagamento -->
+                        <div id="step-5" class="step-content">
+                            <h2 class="text-2xl font-[800] text-slate-900 mb-8">Dados do Benefício:</h2>
+                            <div class="space-y-6">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Banco onde recebe o benefício</label>
+                                    <select id="form-banco" class="w-full bg-slate-50 border border-slate-200 p-5 rounded-2xl focus:border-blue-600 outline-none transition-all font-bold appearance-none">
+                                        <option value="">Selecione seu banco...</option>
+                                        <option>Bradesco</option>
+                                        <option>Itaú</option>
+                                        <option>Banco do Brasil</option>
+                                        <option>Caixa Econômica</option>
+                                        <option>Santander</option>
+                                        <option>AGIBANK</option>
+                                        <option>Crefisa</option>
+                                        <option>Outro Banco</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Em qual dia você recebe o benefício?</label>
+                                    <select id="form-dia" class="w-full bg-slate-50 border border-slate-200 p-5 rounded-2xl focus:border-blue-600 outline-none transition-all font-bold appearance-none max-h-40 overflow-y-auto">
+                                        <option value="">Selecione o dia do pagamento...</option>
+                                        <!-- Gerado via JS -->
+                                    </select>
+                                </div>
+                                <div class="bg-blue-50 border border-blue-100 p-6 rounded-3xl flex gap-4">
+                                    <div class="text-blue-600">🛡️</div>
+                                    <p class="text-[11px] text-blue-800 font-medium italic">Sua segurança em primeiro lugar. Não solicitamos senhas bancárias em nenhuma etapa.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ETAPA 6: SUCESSO -->
+                        <div id="step-6" class="step-content">
+                            <div class="text-center space-y-6 py-10">
+                                <div class="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4 text-4xl animate-bounce">✓</div>
+                                <h2 class="text-3xl font-black text-slate-900 leading-tight">Simulação Concluída! Clique no Botao verde Abaixo</h2>
+                                <p class="text-slate-600 font-medium px-4">Encontramos as melhores taxas para você. Clique abaixo para receber os detalhes agora mesmo no seu WhatsApp.</p>
+                                <div class="bg-slate-50 p-6 rounded-3xl border border-slate-200 text-left space-y-2 mx-auto max-w-sm">
+                                    <p class="text-xs font-bold text-slate-400 uppercase">Resumo Selecionado:</p>
+                                    <p class="text-sm font-bold text-slate-800" id="resumo-final">--</p>
+                                </div>
+                                <button type="button" onclick="openWhatsAppFinal()" class="w-full py-6 bg-green-500 text-white font-black rounded-3xl text-xl hover:bg-green-600 transition-all shadow-xl shadow-green-100 uppercase flex items-center justify-center gap-3">
+                                    RECEBER PROPOSTA NO WHATSAPP
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Botões Navegação -->
+                        <div class="mt-12 flex flex-col md:flex-row gap-4" id="nav-btns">
+                            <button type="button" id="prevBtn" onclick="changeStep(-1)" class="hidden w-full md:w-1/3 py-5 bg-slate-100 text-slate-400 font-bold rounded-2xl hover:bg-slate-200 transition-all uppercase text-sm">Voltar</button>
+                            <button type="button" id="nextBtn" onclick="changeStep(1)" class="w-full flex-1 py-5 btn-primary text-white font-bold rounded-2xl text-lg shadow-xl shadow-blue-200 uppercase tracking-tighter">Próximo Passo</button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 text-white py-20 px-6">
+        <div class="max-w-7xl mx-auto space-y-16">
+            <div class="grid md:grid-cols-2 gap-12 border-b border-slate-800 pb-16">
+                <div>
+                    <span class="text-3xl font-black tracking-tighter">CRED<span class="text-blue-500">INSS</span></span>
+                    <p class="mt-4 text-slate-400 text-sm max-w-sm italic">O crédito consciente que você merece.</p>
+                </div>
+                <div class="md:text-right text-sm text-slate-400">
+                    <p><b>CNPJ:</b> 12.345.678/0001-90</p>
+                    <p><b>Razão Social:</b> CredINSS Soluções Financeiras LTDA</p>
+                    <p>Av. Paulista, 1000 - São Paulo/SP</p>
+                </div>
+            </div>
+            <p class="text-[10px] text-slate-500 leading-relaxed uppercase tracking-widest text-center">Taxas de 1.66% a.m (Consignado) e 2.46% a.m (RMC). Sujeito à análise. CET anual entre 18% e 24%.</p>
+        </div>
+    </footer>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 6;
+        let selectedTerm = 84;
+
+        // Populate days 01-31
+        const diaSelect = document.getElementById('form-dia');
+        for (let i = 1; i <= 31; i++) {
+            let day = i < 10 ? '0' + i : i;
+            let opt = document.createElement('option');
+            opt.value = day;
+            opt.innerHTML = `Dia ${day}`;
+            diaSelect.appendChild(opt);
+        }
+
+        // Current Date
+        const now = new Date();
+        document.getElementById('current-date').innerText = `${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()}`;
+
+        // Countdown
+        let time = 599;
+        setInterval(() => {
+            if(time <= 0) return;
+            time--;
+            const min = Math.floor(time / 60);
+            const sec = time % 60;
+            document.getElementById('countdown').innerText = `OFERTA EXPIRA EM 0${min}:${sec < 10 ? '0'+sec : sec}`;
+        }, 1000);
+
+        // Progress Dots
+        const dots = document.getElementById('progress-dots');
+        for(let i=1; i<=totalSteps; i++) {
+            const dot = document.createElement('div');
+            dot.className = `h-1.5 rounded-full transition-all duration-300 ${i===1 ? 'w-8 bg-blue-600' : 'w-2 bg-slate-200'}`;
+            dot.id = `dot-${i}`;
+            dots.appendChild(dot);
+        }
+
+        function autoNext(name, value) {
+            document.getElementById(`input-${name}`).value = value;
+            const currentStepDiv = document.getElementById(`step-${currentStep}`);
+            currentStepDiv.querySelectorAll('.card-choice').forEach(el => el.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            setTimeout(() => changeStep(1), 300);
+        }
+
+        function setTerm(t) {
+            selectedTerm = t;
+            document.querySelectorAll('.term-badge').forEach(el => el.classList.remove('active'));
+            document.getElementById(`term-${t}`).classList.add('active');
+            recalc();
+        }
+
+        function recalc() {
+            const val = parseInt(document.getElementById('sim-input-val').value);
+            document.getElementById('sim-val-display').innerText = `R$ ${val.toLocaleString()}`;
+            const rate = 0.0166;
+            const pmt = val * ( (rate * Math.pow(1+rate, selectedTerm)) / (Math.pow(1+rate, selectedTerm) - 1) );
+            document.getElementById('res-parcela').innerText = `R$ ${pmt.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById('res-total').innerText = `Total: R$ ${(pmt * selectedTerm).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        }
+
+        function isValidCPF(cpf) {
+            cpf = cpf.replace(/[^\d]+/g,'');
+            if(cpf == '' || cpf.length != 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+            let add = 0;
+            for (let i=0; i < 9; i ++) add += parseInt(cpf.charAt(i)) * (10 - i);
+            let rev = 11 - (add % 11);
+            if (rev == 10 || rev == 11) rev = 0;
+            if (rev != parseInt(cpf.charAt(9))) return false;
+            add = 0;
+            for (let i = 0; i < 10; i ++) add += parseInt(cpf.charAt(i)) * (11 - i);
+            rev = 11 - (add % 11);
+            if (rev == 10 || rev == 11) rev = 0;
+            if (rev != parseInt(cpf.charAt(10))) return false;
+            return true;
+        }
+
+        function changeStep(n) {
+            if (n === 1 && !validate()) return;
+            currentStep += n;
+            updateView();
+        }
+
+        function validate() {
+            if (currentStep === 4) {
+                const n = document.getElementById('form-nome').value;
+                const c = document.getElementById('form-cpf').value;
+                const w = document.getElementById('form-whatsapp').value;
+                if (n.length < 4) { alert("Informe seu nome completo"); return false; }
+                if (!isValidCPF(c)) { alert("CPF Inválido."); return false; }
+                if (w.length < 14) { alert("WhatsApp Inválido."); return false; }
+            }
+            if (currentStep === 5) {
+                if (!document.getElementById('form-banco').value || !document.getElementById('form-dia').value) {
+                    alert("Por favor, preencha todos os dados."); return false;
+                }
+            }
+            return true;
+        }
+
+        function updateView() {
+            document.querySelectorAll('.step-content').forEach((s, idx) => s.classList.toggle('active', idx === currentStep-1));
+            document.getElementById('step-label').innerText = `Passo ${currentStep} de ${totalSteps}`;
+            document.getElementById('prevBtn').classList.toggle('hidden', currentStep === 1 || currentStep === totalSteps);
+            document.getElementById('nextBtn').classList.toggle('hidden', currentStep === 3 || currentStep === totalSteps);
+            document.getElementById('nav-btns').classList.toggle('hidden', currentStep === totalSteps);
+
+            for(let i=1; i<=totalSteps; i++) {
+                const dot = document.getElementById(`dot-${i}`);
+                if(i === currentStep) { dot.className = "h-1.5 w-8 bg-blue-600 rounded-full transition-all"; }
+                else if(i < currentStep) { dot.className = "h-1.5 w-2 bg-blue-300 rounded-full transition-all"; }
+                else { dot.className = "h-1.5 w-2 bg-slate-200 rounded-full transition-all"; }
+            }
+
+            if(currentStep === totalSteps) {
+                const v = document.getElementById('sim-val-display').innerText;
+                const p = document.getElementById('res-parcela').innerText;
+                document.getElementById('resumo-final').innerText = `${selectedTerm}x de ${p} (Valor: ${v})`;
+            }
+
+            // Enhanced Scrolling: Scrolls to form top with offset for navbar
+            const anchor = document.getElementById('form-anchor');
+            const offset = 100;
+            const elementPosition = anchor.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+            });
+        }
+
+        // Input Masks
+        document.getElementById('form-cpf').addEventListener('input', e => {
+            let v = e.target.value.replace(/\D/g, '').substring(0, 11);
+            if (v.length > 9) v = v.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+            else if (v.length > 6) v = v.replace(/^(\d{3})(\d{3})(\d{0,3})/, "$1.$2.$3");
+            else if (v.length > 3) v = v.replace(/^(\d{3})(\d{0,3})/, "$1.$2");
+            e.target.value = v;
+        });
+
+        document.getElementById('form-whatsapp').addEventListener('input', e => {
+            let v = e.target.value.replace(/\D/g, '').substring(0, 11);
+            if (v.length > 10) v = v.replace(/^(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+            else if (v.length > 6) v = v.replace(/^(\d{2})(\d{0,5})/, "($1) $2");
+            else if (v.length > 2) v = v.replace(/^(\d{2})(\d{0,2})/, "($1) $2");
+            e.target.value = v;
+        });
+
+        function openWhatsAppFinal() {
+            const perfil = document.getElementById('input-perfil').value;
+            const servico = document.getElementById('input-servico').value;
+            const valor = document.getElementById('sim-val-display').innerText;
+            const parcela = document.getElementById('res-parcela').innerText;
+            const total = document.getElementById('res-total').innerText;
+            const nome = document.getElementById('form-nome').value;
+            const cpf = document.getElementById('form-cpf').value;
+            const zap = document.getElementById('form-whatsapp').value;
+            const banco = document.getElementById('form-banco').value;
+            const dia = document.getElementById('form-dia').value;
+
+            const msg = `💎 *SOLICITAÇÃO DE CRÉDITO INSS*\n\n👤 *CLIENTE:*\n- Nome: ${nome}\n- CPF: ${cpf}\n- WhatsApp: ${zap}\n\n📍 *DADOS:* \n- Perfil: ${perfil}\n- Banco: ${banco}\n- Dia Pagto: ${dia}\n\n💰 *SIMULAÇÃO:*\n- Serviço: ${servico}\n- Valor: ${valor}\n- Prazo: ${selectedTerm}x\n- Parcela: ${parcela}\n- ${total}\n\n--- Solicito análise de margem.`;
+
+            const fone = "5511954802338";
+            window.open(`https://wa.me/${fone}?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        recalc();
+    </script>
+</body>
+</html>
